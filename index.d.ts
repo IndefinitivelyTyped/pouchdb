@@ -3,31 +3,19 @@
 // Definitions started by: Bill Sears <https://github.com/MrBigDog2U/>
 // Definition updates by: Max Battcher <https://github.com/WorldMaker/>
 
-interface PouchError {
+export interface PouchError {
     status: number;
     error: string;
     reason: string;
 }
 
-interface PouchApi {
-    type(): string;
-    id(): string;
-    close(callback: () => void): void;
-    close(): Promise<void>;
-}
-
-interface PouchInfoResponse {
+export interface PouchInfoResponse {
     db_name: string;
     doc_count: number;
     update_seq: string;
 }
 
-interface PouchApi {
-    info(callback: (err: PouchError, res: PouchInfoResponse) => void): void;
-    info(): Promise<PouchInfoResponse>;
-}
-
-interface PouchGetOptions {
+export interface PouchGetOptions {
     rev?: string;
     revs?: boolean;
     revs_info?: boolean;
@@ -35,13 +23,13 @@ interface PouchGetOptions {
     attachments?: boolean;
 }
 
-interface PouchGetResponse {
+export interface PouchGetResponse {
     _id: string;
     _rev: string;
     _attachments: any;
 }
 
-interface PouchAllDocsOptions {
+export interface PouchAllDocsOptions {
     startkey?: string;
     endKey?: string;
     descending?: boolean;
@@ -49,19 +37,127 @@ interface PouchAllDocsOptions {
     conflicts?: boolean;
 }
 
-interface PouchAllDocsItem {
+export interface PouchAllDocsItem {
     id: string;
     key: string;
     value: any;
     doc: any;
 }
 
-interface PouchAllDocsResponse {
+export interface PouchAllDocsResponse {
     total_rows: number;
     rows: PouchAllDocsItem[];
 }
 
-interface PouchApi {
+export interface PouchUpdateOptions {
+    new_edits?: boolean;
+}
+
+export interface PouchUpdateResponse {
+    ok: boolean;
+    id: string;
+    rev: string;
+}
+
+export interface PouchQueryOptions {
+    complete?: any;
+    include_docs?: boolean;
+    error?: (err: PouchError) => void;
+    descending?: boolean;
+    reduce?: boolean;
+}
+
+export interface PouchQueryResponse {
+    rows: any[];
+}
+
+export interface PouchFilter {
+    map: (doc: any) => void;
+    reduce?: (key: string, value: any) => any;
+}
+
+export interface PouchAttachmentOptions {
+    decode?: boolean;
+}
+
+export interface PouchCancellable {
+    cancel: () => void;
+}
+
+export interface PouchChangesOptions {
+    onChange?: (change: PouchChange) => void;
+    complete?: (err: PouchError, res: PouchChanges) => void;
+    seq?: number;
+    since?: number | string;
+    descending?: boolean;
+    filter?: PouchFilter;
+    continuous?: boolean;
+    include_docs?: boolean;
+    conflicts?: boolean;
+    live?: boolean;
+}
+
+export interface PouchChangesEmitter extends PouchCancellable {
+    on(event: string, handler: Function): PouchChangesEmitter;
+    on(event: 'change', handler: (change: PouchChange) => void): PouchChangesEmitter;
+    on(event: 'complete', handler: (info: PouchChanges) => void): PouchChangesEmitter;
+    on(event: 'error', handler: (error: PouchError) => void): PouchChangesEmitter;
+}
+
+export interface PouchChange {
+    changes: any;
+    doc: PouchGetResponse;
+    id: string;
+    seq: number;
+}
+
+export interface PouchChanges {
+    results: PouchChange[];
+}
+
+export interface PouchRevsDiffOptions {
+}
+
+export interface PouchReplicateOptions {
+    continuous?: boolean;
+    onChange?: (change: any) => void;
+    filter?: any;			// Can be either string or PouchFilter
+    complete?: (err: PouchError, res: PouchChanges) => void;
+}
+
+export interface PouchReplicateResponse {
+    ok: boolean;
+    start_time: Date;
+    end_time: Date;
+    docs_read: number;
+    docs_written: number;
+}
+
+export interface PouchReplicate {
+    from(url: string, opts: PouchReplicateOptions, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
+    from(url: string, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
+    to(dbName: string, opts: PouchReplicateOptions, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
+    to(dbName: string, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
+}
+
+export interface PouchOptions {
+    name?: string;
+    adapter?: string;
+}
+
+declare export default class PouchDB {
+    constructor(name: string, opts?: PouchOptions);
+    destroy(name: string, callback: (err: PouchError) => void): void;
+    destroy(name: string): Promise<void>;
+
+    type(): string;
+    id(): string;
+    close(callback: () => void): void;
+    close(): Promise<void>;
+
+    info(callback: (err: PouchError, res: PouchInfoResponse) => void): void;
+    info(): Promise<PouchInfoResponse>;
+
     //
     // get == select by id
     //
@@ -71,19 +167,7 @@ interface PouchApi {
     allDocs(opts: PouchAllDocsOptions, callback: (err: PouchError, res: PouchAllDocsResponse) => void): void;
     allDocs(callback: (err: PouchError, res: PouchAllDocsResponse) => void): void;
     allDocs(opts?: PouchAllDocsOptions): Promise<PouchAllDocsResponse>;
-}
 
-interface PouchUpdateOptions {
-    new_edits?: boolean;
-}
-
-interface PouchUpdateResponse {
-    ok: boolean;
-    id: string;
-    rev: string;
-}
-
-interface PouchApi {
     bulkDocs(req: any[], opts: PouchUpdateOptions, callback: (err: PouchError, res: PouchUpdateResponse[]) => void): void;
     bulkDocs(req: any[], callback: (err: PouchError, res: PouchUpdateResponse[]) => void): void;
     bulkDocs(req: any[], opts?: PouchUpdateOptions): Promise<PouchUpdateResponse[]>;
@@ -105,26 +189,7 @@ interface PouchApi {
     remove(doc: any, opts: PouchUpdateOptions, callback: (err: PouchError, res: PouchUpdateResponse) => void): void;
     remove(doc: any, callback: (err: PouchError, res: PouchUpdateResponse) => void): void;
     remove(doc: any, opts?: PouchUpdateOptions): Promise<PouchUpdateResponse>;
-}
 
-interface PouchFilter {
-    map: (doc: any) => void;
-    reduce?: (key: string, value: any) => any;
-}
-
-interface PouchQueryOptions {
-    complete?: any;
-    include_docs?: boolean;
-    error?: (err: PouchError) => void;
-    descending?: boolean;
-    reduce?: boolean;
-}
-
-interface PouchQueryResponse {
-    rows: any[];
-}
-
-interface PouchApi {
     //
     // query == select by other criteria
     //
@@ -133,98 +198,14 @@ interface PouchApi {
     query(fun: PouchFilter, opts: PouchQueryOptions, callback: (err: PouchError, res: PouchQueryResponse) => void): void;
     query(fun: PouchFilter, callback: (err: PouchError, res: PouchQueryResponse) => void): void;
     query(fun: string | PouchFilter, opts?: PouchQueryOptions): Promise<PouchQueryResponse>;
-}
 
-interface PouchAttachmentOptions {
-    decode?: boolean;
-}
-
-interface PouchApi {
     getAttachment(id: string, attachmentId: string, opts?: PouchAttachmentOptions): Promise<any>;
     putAttachment(id: string, rev: string, attachmentId: string, doc: any, type: string): Promise<PouchUpdateResponse>;
     removeAttachment(id: string, rev: string, attachmentId: string): Promise<PouchUpdateResponse>;
-}
 
-interface PouchCancellable {
-    cancel: () => void;
-}
-
-interface PouchChangesOptions {
-    onChange?: (change: PouchChange) => void;
-    complete?: (err: PouchError, res: PouchChanges) => void;
-    seq?: number;
-    since?: number | string;
-    descending?: boolean;
-    filter?: PouchFilter;
-    continuous?: boolean;
-    include_docs?: boolean;
-    conflicts?: boolean;
-    live?: boolean;
-}
-
-interface PouchChangesEmitter extends PouchCancellable {
-    on(event: string, handler: Function): PouchChangesEmitter;
-    on(event: 'change', handler: (change: PouchChange) => void): PouchChangesEmitter;
-    on(event: 'complete', handler: (info: PouchChanges) => void): PouchChangesEmitter;
-    on(event: 'error', handler: (error: PouchError) => void): PouchChangesEmitter;
-}
-
-interface PouchChange {
-    changes: any;
-    doc: PouchGetResponse;
-    id: string;
-    seq: number;
-}
-
-interface PouchChanges {
-    results: PouchChange[];
-}
-
-interface PouchApi {
     changes(opts?: PouchChangesOptions): PouchChangesEmitter;
-}
 
-interface PouchRevsDiffOptions {
-}
-
-interface PouchReplicateOptions {
-    continuous?: boolean;
-    onChange?: (change: any) => void;
-    filter?: any;			// Can be either string or PouchFilter
-    complete?: (err: PouchError, res: PouchChanges) => void;
-}
-
-interface PouchReplicateResponse {
-    ok: boolean;
-    start_time: Date;
-    end_time: Date;
-    docs_read: number;
-    docs_written: number;
-}
-
-interface PouchReplicate {
-    from(url: string, opts: PouchReplicateOptions, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
-    from(url: string, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
-    to(dbName: string, opts: PouchReplicateOptions, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
-    to(dbName: string, callback: (err: PouchError, res: PouchReplicateResponse) => void): PouchCancellable;
-}
-
-interface PouchApi {
     revsDiff(req: any, opts: PouchRevsDiffOptions, callback: (missing: any) => void): void;
     revsDiff(req: any, callback: (missing: any) => void): void;
     replicate: PouchReplicate;
 }
-
-interface PouchOptions {
-    name?: string;
-    adapter?: string;
-}
-
-interface PouchDB extends PouchApi {
-    new (name: string, opts?: PouchOptions): PouchDB;
-    destroy(name: string, callback: (err: PouchError) => void): void;
-    destroy(name: string): Promise<void>;
-}
-
-declare var PouchDB: PouchDB;
-export default PouchDB;
