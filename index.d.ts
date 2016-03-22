@@ -31,7 +31,7 @@ export interface PouchGetResponse {
 
 export interface PouchAllDocsOptions {
     startkey?: string;
-    endKey?: string;
+    endkey?: string;
     descending?: boolean;
     include_docs?: boolean;
     conflicts?: boolean;
