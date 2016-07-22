@@ -21,6 +21,7 @@ export interface PouchGetOptions {
     revs_info?: boolean;
     conflicts?: boolean;
     attachments?: boolean;
+    binary?: boolean;
 }
 
 export interface PouchGetResponse {
