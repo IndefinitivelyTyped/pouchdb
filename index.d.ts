@@ -201,8 +201,8 @@ declare export default class PouchDB {
     query(fun: string | PouchFilter, opts?: PouchQueryOptions): Promise<PouchQueryResponse>;
 
     getAttachment(id: string, attachmentId: string, opts?: PouchAttachmentOptions): Promise<any>;
-    putAttachment(id: string, rev: string, attachmentId: string, doc: any, type: string): Promise<PouchUpdateResponse>;
-    removeAttachment(id: string, rev: string, attachmentId: string): Promise<PouchUpdateResponse>;
+    putAttachment(id: string, attachmentId: string, rev: string, doc: any, type: string): Promise<PouchUpdateResponse>;
+    removeAttachment(id: string, attachmentId: string, rev: string): Promise<PouchUpdateResponse>;
 
     changes(opts?: PouchChangesOptions): PouchChangesEmitter;
 
